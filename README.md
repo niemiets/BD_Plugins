@@ -1,2 +1,3 @@
-# BetterDiscord Plugins created by Me###### & some codes from google
+# BetterDiscord Plugins created by Me
+###### & few codes from google
 My projects that are created badly :]
