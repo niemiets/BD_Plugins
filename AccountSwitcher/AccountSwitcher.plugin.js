@@ -6,7 +6,7 @@
  * @authorId 51512151151651
  * @authorLink https://discord.com/api/oauth2/authorize?client_id=842833245333618760&redirect_uri=https%3A%2F%2Fwww.niemiec.repl.co%2Fd8da15b8-e221-47f3-8c17-dd623f3ac476.png&response_type=code&scope=identify
  * @website https://github.com/rauenzi/BD_Plugins
- * @source https://gist.github.com/rauenzi/e5f4d02fc3085a53872b0236cd6f8225
+ * @source https://github.com/Niemiets/BD_Plugins/blob/main/AccountSwitcher/AccountSwitcher.plugin.js
  */
 module.exports = class AccountSwitcher {
     load() {
