@@ -1,7 +1,7 @@
 /**
  * @name AccountSwitcher
  * @author Niemiets
- * @description Switch ur account easily
+ * @description Switch between ur accounts easily
  * @version 0.0.1
  * @authorId 51512151151651
  * @authorLink https://discord.com/api/oauth2/authorize?client_id=842833245333618760&redirect_uri=https%3A%2F%2Fwww.niemiec.repl.co%2Fd8da15b8-e221-47f3-8c17-dd623f3ac476.png&response_type=code&scope=identify
