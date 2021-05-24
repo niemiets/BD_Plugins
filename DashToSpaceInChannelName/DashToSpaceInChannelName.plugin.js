@@ -12,11 +12,13 @@
 module.exports = class DashToSpaceInChannelName{
     start() {
         dashToSpace(document.getElementsByClassName("channelName-2YrOjO"))
+        dashToSpace(document.getElementsByClassName("title-29uC1r"))
     }
     stop() {
     }
     onSwitch() {
         dashToSpace(document.getElementsByClassName("channelName-2YrOjO"))
+        dashToSpace(document.getElementsByClassName("title-29uC1r"))
     }
 }
 
