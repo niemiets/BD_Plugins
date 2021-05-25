@@ -2,28 +2,27 @@
  * @name DashToSpaceInChannelName
  * @author Niemiets
  * @description Changes dashes in channels name to spaces
- * @version 0.0.3
+ * @version 0.0.4
  * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
  * @website https://github.com/Niemiets/BD_Plugins
  * @source https://github.com/Niemiets/BD_Plugins/tree/main/DashToSpaceInChannelName
- * @updateUrl https://raw.githubusercontent.com/Niemiets/BD_Plugins/main/DashToSpaceInChannelName/DashToSpaceInChannelName.plugin.js
+ * @updateUrl https://niemiets.github.io/BD_Plugins/DashToSpaceInChannelName/DashToSpaceInChannelName.plugin.js
  */
 module.exports = class DashToSpaceInChannelName{
     start() {
-        dashToSpace(document.getElementsByClassName("channelName-2YrOjO"))
-        dashToSpace(document.getElementsByClassName("title-29uC1r"))
+        this.dashToSpace(document.getElementsByClassName("channelName-2YrOjO"))
+        this.dashToSpace(document.getElementsByClassName("title-29uC1r"))
     }
     stop() {
     }
     onSwitch() {
-        dashToSpace(document.getElementsByClassName("channelName-2YrOjO"))
-        dashToSpace(document.getElementsByClassName("title-29uC1r"))
+        this.dashToSpace(document.getElementsByClassName("channelName-2YrOjO"))
+        this.dashToSpace(document.getElementsByClassName("title-29uC1r"))
     }
-}
-
-function dashToSpace(elements){
-    for(var i = 0;i < elements.length;i++){
-        elements[i].textContent = elements[i].textContent.replace(/-/g, " ")
+    dashToSpace(elements){
+        for(var i = 0;i < elements.length;i++){
+            elements[i].textContent = elements[i].textContent.replace(/-/g, " ")
+        }
     }
 }
