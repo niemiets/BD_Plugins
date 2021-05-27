@@ -1,7 +1,7 @@
 /**
  * @name DashToSpaceInChannelName
  * @author Niemiets
- * @description Changes dashes in channels name to spaces
+ * @description Changes dashes in channel names to spaces
  * @version 0.0.4
  * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
