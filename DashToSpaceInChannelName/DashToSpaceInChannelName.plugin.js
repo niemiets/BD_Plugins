@@ -3,7 +3,7 @@
  * @author Niemiets
  * @description Changes dashes in channels name to spaces
  * @version 0.0.5
- * @authorId 391014265108691456
+ * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
  * @website https://github.com/Niemiets/BD_Plugins
  * @source https://github.com/Niemiets/BD_Plugins/tree/main/DashToSpaceInChannelName
