@@ -2,20 +2,16 @@
  * @name DashToSpaceInChannelName
  * @author Niemiets
  * @description Changes dashes in channels name to spaces
- * @version 1.0.0
+ * @version 1.0.1
  * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
  * @website https://github.com/Niemiets/BD_Plugins
  * @source https://github.com/Niemiets/BD_Plugins/tree/main/DashToSpaceInChannelName
  * @updateUrl https://raw.githubusercontent.com/Niemiets/BD_Plugins/main/DashToSpaceInChannelName/DashToSpaceInChannelName.plugin.js
  */
-
 Patcher = BdApi.Patcher
 ReactDOM = BdApi.ReactDOM
-
 const dashRegExp = new RegExp("-", "g")
-
-
 module.exports = class DashToSpaceInChannelName{
 
     start() {
@@ -56,9 +52,9 @@ module.exports = class DashToSpaceInChannelName{
 
     reloadGuild() {
         var currentGuildId = BdApi.findModuleByProps("getLastSelectedGuildId").getGuildId()
-        var currentChannelId = BdApi.findModuleByProps("getChannelId").getChannelId()
+        var currentChannelId = BdApi.findAllModules(m=>m["getChannelId"])[1].getChannelId()
         if(currentGuildId){
-            BdApi.findModuleByProps("transitionTo").transitionTo("/channels/@me")
+            BdApi.findModuleByProps("transitionTo").transitionTo(`/channels/@me`)
             setTimeout(()=>BdApi.findModuleByProps("transitionTo").transitionTo(`/channels/${currentGuildId}/${currentChannelId}`), 0)
         }
     }
