@@ -51,11 +51,13 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     reloadGuild() {
-        var currentGuildId = BdApi.findModuleByProps("getLastSelectedGuildId").getGuildId()
-        var currentChannelId = BdApi.findAllModules(m=>m["getChannelId"])[1].getChannelId()
+        const currentGuildId = BdApi.findModuleByProps("getLastSelectedGuildId").getGuildId()
+        const currentChannelId = BdApi.findModuleByProps("getLastSelectedChannelId").getChannelId()
+        const transitionTo = BdApi.findModuleByProps("transitionTo").transitionTo
+        //checks if ur not in dm
         if(currentGuildId){
-            BdApi.findModuleByProps("transitionTo").transitionTo(`/channels/@me`)
-            setTimeout(()=>BdApi.findModuleByProps("transitionTo").transitionTo(`/channels/${currentGuildId}/${currentChannelId}`), 0)
+            transitionTo(`/channels/@me`)
+            setImmediate(()=>transitionTo(`/channels/${currentGuildId}/${currentChannelId}`))
         }
     }
 }
