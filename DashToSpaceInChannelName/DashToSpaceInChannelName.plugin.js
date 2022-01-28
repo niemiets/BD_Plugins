@@ -2,7 +2,7 @@
  * @name DashToSpaceInChannelName
  * @author Niemiets
  * @description Changes dashes in channels name to spaces
- * @version 1.0.1
+ * @version 1.0.2
  * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
  * @website https://github.com/Niemiets/BD_Plugins
@@ -42,22 +42,20 @@ module.exports = class DashToSpaceInChannelName{
                 }
             }
         )
-        this.reloadGuild()
+        this.rerender()
     }
 
     stop() {
         Patcher.unpatchAll("DashToSpaceInChannelName")
-        this.reloadGuild()
+        this.rerender()
     }
 
-    reloadGuild() {
-        const currentGuildId = BdApi.findModuleByProps("getLastSelectedGuildId").getGuildId()
-        const currentChannelId = BdApi.findModuleByProps("getLastSelectedChannelId").getChannelId()
-        const transitionTo = BdApi.findModuleByProps("transitionTo").transitionTo
-        //checks if ur not in dm
-        if(currentGuildId){
-            transitionTo(`/channels/@me`)
-            setImmediate(()=>transitionTo(`/channels/${currentGuildId}/${currentChannelId}`))
-        }
+    rerender() {
+        BdApi.getInternalInstance(document.getElementsByClassName("chat-2ZfjoI")[0]).return.stateNode.forceUpdate()
+        Object.keys(document.getElementsByClassName("channelName-3KPsGw")).forEach(
+            (i)=>{
+                BdApi.getInternalInstance(document.getElementsByClassName("containerDefault-YUSmu3")[i]).return.stateNode.forceUpdate()
+            }
+        )
     }
 }
