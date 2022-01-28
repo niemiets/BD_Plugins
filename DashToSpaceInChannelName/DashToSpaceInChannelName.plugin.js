@@ -52,7 +52,7 @@ module.exports = class DashToSpaceInChannelName{
 
     rerender() {
         BdApi.getInternalInstance(document.getElementsByClassName("chat-2ZfjoI")[0]).return.stateNode.forceUpdate()
-        Object.keys(document.getElementsByClassName("channelName-3KPsGw")).forEach(
+        Object.keys(document.getElementsByClassName("containerDefault-YUSmu3")).forEach(
             (i)=>{
                 BdApi.getInternalInstance(document.getElementsByClassName("containerDefault-YUSmu3")[i]).return.stateNode.forceUpdate()
             }
