@@ -2,7 +2,7 @@
  * @name DashToSpaceInChannelName
  * @author Niemiets
  * @description Changes dashes in channels name to spaces
- * @version 1.0.2
+ * @version 1.0.3
  * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
  * @website https://github.com/Niemiets/BD_Plugins
@@ -51,7 +51,7 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     rerender() {
-        BdApi.getInternalInstance(document.getElementsByClassName("chat-2ZfjoI")[0]).return.stateNode.forceUpdate()
+        BdApi.getInternalInstance(document.getElementsByClassName("chat-2ZfjoI")[0]??document)?.return.stateNode.forceUpdate()
         Object.keys(document.getElementsByClassName("containerDefault-YUSmu3")).forEach(
             (i)=>{
                 BdApi.getInternalInstance(document.getElementsByClassName("containerDefault-YUSmu3")[i]).return.stateNode.forceUpdate()
