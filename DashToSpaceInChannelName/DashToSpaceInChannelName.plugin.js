@@ -2,13 +2,24 @@
  * @name DashToSpaceInChannelName
  * @author Niemiets
  * @description Changes dashes in channels name to spaces
- * @version 1.1.0
+ * @version 1.1.1
  * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
  * @website https://github.com/Niemiets/BD_Plugins
  * @source https://github.com/Niemiets/BD_Plugins/tree/main/DashToSpaceInChannelName
  * @updateUrl https://raw.githubusercontent.com/Niemiets/BD_Plugins/main/DashToSpaceInChannelName/DashToSpaceInChannelName.plugin.js
  */
+
+const ChannelItem = BdApi.findModule(m=>m?.default?.displayName === "ChannelItem")
+const HeaderBar = BdApi.findModule(m=>m?.default?.displayName === "HeaderBar")
+const TextChannelEmptyMessage = BdApi.findModule(m=>m?.default?.displayName === "TextChannelEmptyMessage")
+const Mention = BdApi.findModule(m=>m?.default?.displayName === "Mention")
+const Autocomplete = BdApi.findModule(m=>m.default.displayName === "Autocomplete")
+const SearchPopoutComponent = BdApi.findModuleByProps("SearchPopoutComponent")
+const Channel = BdApi.findModule(m=>m.Channel.displayName === "Channel")
+const AcceptGuildTemplate = BdApi.findModule(m=>m.default.toString().includes("acceptGuildTemplate"))
+const SettingsView = BdApi.findModuleByDisplayName("SettingsView")
+const SlateChannelTextArea = BdApi.findModuleByDisplayName("SlateChannelTextArea")
 
 const {default: FormTitle, Tags: FormTitleTags} = BdApi.findModule(m => m.default.displayName === "FormTitle")
 const {default: TextInput, TextInputSizes} = BdApi.findModule(m => m.default.displayName === "TextInput")
@@ -37,7 +48,7 @@ module.exports = class DashToSpaceInChannelName{
             var patches = {regExp: "/-/g"}
 
             for(const patchName in this){
-                if(patchName.match(/patch.+/)){
+                if(patchName.match(/^patch.+/)){
                     patches[patchName] = true
                 }
             }
@@ -65,15 +76,15 @@ module.exports = class DashToSpaceInChannelName{
         var patches = []
 
         for(const patchName in this){
-            if(patchName.match(/patch.+/)){
+            if(patchName.match(/^patch.+/)){
                 patches.push(
                     BdApi.React.createElement("div", {
                         className: "DashToSpaceInChannelName-Patch-Container",
                         children: [
                             BdApi.React.createElement(Switch, {
-                                children: patchName.match(/patch(.+)/)[1],
+                                children: patchName.match(/^patch(.+)/)[1],
                                 className: "DashToSpaceInChannelName-Patch-Switch",
-                                id: patchName.match(/patch(.+)/)[1],
+                                id: patchName.match(/^patch(.+)/)[1],
                                 note: undefined,
                                 onChange: (react, data)=>{
                                     this.settings = {[patchName]: data}
@@ -89,7 +100,7 @@ module.exports = class DashToSpaceInChannelName{
         // On settings modal close
         BdApi.Patcher.before("DashToSpaceInChannelName(SettingsPanel)", ModalComponents, "ModalRoot", (_, args)=>{
             if(args[0].transitionState === 2){
-                // Unpatch all patches
+                // Unpatch patches
                 BdApi.Patcher.unpatchAll("DashToSpaceInChannelName")
                 
                 // Patch components
@@ -161,7 +172,7 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     patchChannelNames = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", BdApi.findModule(m=>m?.default?.displayName === "ChannelItem"), "default", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", ChannelItem, "default", 
             (_, __, ret)=>{
                 if(ret?.props?.children?.props?.children?.[1]?.props?.children?.[0]?.props?.children?.[1]?.props?.children?.[0]?.props?.children){
                     ret.props.children.props.children[1].props.children[0].props.children[1].props.children[0].props.children = ret.props.children.props.children[1].props.children[0].props.children[1].props.children[0].props.children.replace(this.regExp, " ")
@@ -171,7 +182,7 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     patchChannelTitle = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", BdApi.findModule(m=>m?.default?.displayName === "HeaderBar"), "default", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", HeaderBar, "default", 
             (_, __, ret)=>{
                 if(ret?.props?.children?.props?.children?.[0]?.props?.children?.[0]?.props?.children?.[1]?.props?.children){
                     ret.props.children.props.children[0].props.children[0].props.children[1].props.children = ret.props.children.props.children[0].props.children[0].props.children[1].props.children.replace(this.regExp, " ")
@@ -181,7 +192,7 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     patchChannelWelcome = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", BdApi.findModule(m=>m?.default?.displayName === "TextChannelEmptyMessage"), "default", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", TextChannelEmptyMessage, "default", 
             (_, __, ret)=>{
                 // Header
                 if(ret?.props?.children?.[1]?.props?.children){
@@ -196,7 +207,7 @@ module.exports = class DashToSpaceInChannelName{
     }
     
     patchChannelMention = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", BdApi.findModule(m=>m?.default?.displayName==="Mention"), "default", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", Mention, "default", 
             (_, __, ret)=>{
                 if(ret.props.children[0]?.props["aria-label"] == "Channel"){
                     if(typeof ret.props.children[1] === "object"){
@@ -210,7 +221,7 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     patchChannelAutocomplete = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", BdApi.findModule(m=>m.default.displayName === "Autocomplete").default.Channel.prototype, "renderContent", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", Autocomplete.default.Channel.prototype, "renderContent", 
             (_, __, ret)=>{
                 ret.props.children[1].props.children.props.children = ret.props.children[1].props.children.props.children.replace(this.regExp, " ")
             }
@@ -218,7 +229,7 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     patchSearchbar = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", BdApi.findModuleByProps("SearchPopoutComponent").GroupData.FILTER_IN, "component", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", SearchPopoutComponent.GroupData.FILTER_IN, "component", 
             (_, __, ret)=>{
                 BdApi.Patcher.after("DashToSpaceInChannelName(Searchbar)", ret.props, "renderResult", 
                     (_, __, ret)=>{
@@ -231,7 +242,7 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     patchQuickswitcher = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", BdApi.findModule(m=>m.Channel.displayName === "Channel").Channel.prototype, "renderName", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", Channel.Channel.prototype, "renderName", 
             (_, __, ret)=>{
                 ret.props.children[0].props.children = ret.props.children[0].props.children.replace(this.regExp, " ")
             }
@@ -239,7 +250,7 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     patchServerTemplate = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", BdApi.findModule(m=>m.default.toString().includes("acceptGuildTemplate")), "default", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", AcceptGuildTemplate, "default", 
             (_, __, ret)=>{
                 ret.preview.props.children[1].props.children[0].props.channels.forEach(
                     (item)=>{
@@ -254,7 +265,7 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     patchChannelsSettingsPanel = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", BdApi.findModuleByDisplayName("SettingsView").prototype, "renderSidebar", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", SettingsView.prototype, "renderSidebar", 
             (_, __, ret)=>{
                 var channelItem = ret?.props?.children?.[0]?.props?.children?.props?.children
                 if(channelItem?.[1]&&channelItem?.[0]?.props?.className === BdApi.findModule(m=>m["channelIcon"]&&m["background"]).channelIcon){
@@ -265,7 +276,7 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     patchSlateChannelTextArea = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", BdApi.findModuleByDisplayName("SlateChannelTextArea").prototype, "render", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", SlateChannelTextArea.prototype, "render", 
             (_, __, ret)=>{
                 if(ret?.props?.children?.[1]?.props?.children?.[0]){
                     ret.props.children[1].props.children[0].props.children = ret.props.children[1].props.children[0].props.children.replace(this.regExp, " ")
@@ -275,14 +286,13 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     rerender = ()=>{
-        // Rerender channel names
-        this.rerenderChannelNames()
-
-        // Rerender channel title
-        this.rerenderChannelTitle()
-
-        // Rerender slate channel text area
-        this.rerenderSlateChannelTextArea()
+        Object.entries(this.settings).forEach(
+            (setting)=>{
+                if(typeof setting[1] === "boolean"){
+                    this["rerender" + setting[0].match(/^patch(.+)/)[1]]?.call()
+                }
+            }
+        )
     }
 
     rerenderChannelNames = ()=>{
