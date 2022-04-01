@@ -2,7 +2,7 @@
  * @name DashToSpaceInChannelName
  * @author Niemiets
  * @description Changes dashes in channels name to spaces
- * @version 1.1.1
+ * @version 1.1.2
  * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
  * @website https://github.com/Niemiets/BD_Plugins
@@ -19,7 +19,7 @@ const SearchPopoutComponent = BdApi.findModuleByProps("SearchPopoutComponent")
 const Channel = BdApi.findModule(m=>m.Channel.displayName === "Channel")
 const AcceptGuildTemplate = BdApi.findModule(m=>m.default.toString().includes("acceptGuildTemplate"))
 const SettingsView = BdApi.findModuleByDisplayName("SettingsView")
-const SlateChannelTextArea = BdApi.findModuleByDisplayName("SlateChannelTextArea")
+const ChannelEditorContainer = BdApi.findModuleByDisplayName("ChannelEditorContainer")
 
 const {default: FormTitle, Tags: FormTitleTags} = BdApi.findModule(m => m.default.displayName === "FormTitle")
 const {default: TextInput, TextInputSizes} = BdApi.findModule(m => m.default.displayName === "TextInput")
@@ -27,6 +27,12 @@ const {default: SwitchItem} = BdApi.findModule(m => m.default.displayName === "S
 const {default: FormDivider} = BdApi.findModule(m => m.default.displayName === "FormDivider")
 const {container: FormContainerClassName, dividerDefault: FormDividerClassName} = BdApi.findModuleByProps("container", "dividerDefault")
 const ModalComponents = BdApi.findModule(m=>m["ModalRoot"]&&!m["default"])
+
+const {textAreaSlate} = BdApi.findModule(m=>m["textAreaSlate"])
+const {containerDefault} = BdApi.findModule(m=>m["containerDefault"])
+const {title} = BdApi.findModule(m=>m["title"]&&m["caret"])
+
+const extend = require("extend")
 
 module.exports = class DashToSpaceInChannelName{
 
@@ -37,10 +43,8 @@ module.exports = class DashToSpaceInChannelName{
     get settings() {
         return BdApi.getData("DashToSpaceInChannelName", "settings")
     }
-    set settings(object) {
-        var { settings } = this
-        settings[Object.keys(object)[0]] = Object.values(object)[0]
-        BdApi.setData("DashToSpaceInChannelName", "settings", settings)
+    set settings(value) {
+        BdApi.setData("DashToSpaceInChannelName", "settings", extend(true, this.settings, value))
     }
 
     load() {
@@ -163,9 +167,9 @@ module.exports = class DashToSpaceInChannelName{
 
     patch = ()=>{
         Object.entries(this.settings).forEach(
-            (setting)=>{
-                if(setting[1] === true){
-                    this[setting[0]]()
+            ([key, value])=>{
+                if(value === true){
+                    this[key]?.call()
                 }
             }
         )
@@ -275,11 +279,11 @@ module.exports = class DashToSpaceInChannelName{
         )
     }
 
-    patchSlateChannelTextArea = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", SlateChannelTextArea.prototype, "render", 
+    patchChannelEditorContainer = ()=>{
+        BdApi.Patcher.after("DashToSpaceInChannelName", ChannelEditorContainer.prototype, "render", 
             (_, __, ret)=>{
-                if(ret?.props?.children?.[1]?.props?.children?.[0]){
-                    ret.props.children[1].props.children[0].props.children = ret.props.children[1].props.children[0].props.children.replace(this.regExp, " ")
+                if(ret?.props?.children?.[2]?.props?.placeholder){
+                    ret.props.children[2].props.placeholder = ret.props.children[2].props.placeholder.replace(this.regExp, " ")
                 }
             }
         )
@@ -296,19 +300,19 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     rerenderChannelNames = ()=>{
-        Object.keys(document.getElementsByClassName("containerDefault-YUSmu3")).forEach(
+        Object.keys(document.getElementsByClassName(containerDefault)).forEach(
             (i)=>{
-                BdApi.getInternalInstance(document.getElementsByClassName("containerDefault-YUSmu3")[i]).return.stateNode.forceUpdate()
+                BdApi.getInternalInstance(document.getElementsByClassName(containerDefault)[i]).return.stateNode.forceUpdate()
             }
         )
     }
 
     rerenderChannelTitle = ()=>{
-        BdApi.getInternalInstance(document.getElementsByClassName("chat-2ZfjoI")[0]??document)?.return?.stateNode?.forceUpdate()
+        BdApi.getInternalInstance(document.getElementsByClassName(title)[0]??document)?.return?.stateNode?.forceUpdate()
     }
 
-    rerenderSlateChannelTextArea = ()=>{
-        BdApi.getInternalInstance(document.getElementsByClassName("slateTextArea-27tjG0")[0]??document)?.return?.stateNode?.forceUpdate()
+    rerenderChannelEditorContainer = ()=>{
+        BdApi.getInternalInstance(document.getElementsByClassName(textAreaSlate)[0]??document)?.return?.return?.stateNode?.forceUpdate()
     }
 }
 
