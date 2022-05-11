@@ -2,7 +2,7 @@
  * @name DashToSpaceInChannelName
  * @author Niemiets
  * @description Changes dashes in channels name to spaces
- * @version 1.1.2
+ * @version 1.1.3
  * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
  * @website https://github.com/Niemiets/BD_Plugins
@@ -33,6 +33,8 @@ const {containerDefault} = BdApi.findModule(m=>m["containerDefault"])
 const {title} = BdApi.findModule(m=>m["title"]&&m["caret"])
 
 const extend = require("extend")
+const {getChannelId} = BdApi.findModuleByProps("getLastSelectedChannelId")
+const {getChannel} = BdApi.findModuleByProps("hasChannel")
 
 module.exports = class DashToSpaceInChannelName{
 
@@ -48,15 +50,13 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     load() {
-        if(!BdApi.getData("DashToSpaceInChannelName", "settings")){
-            var patches = {regExp: "/-/g"}
-
-            for(const patchName in this){
-                if(patchName.match(/^patch.+/)){
-                    patches[patchName] = true
-                }
+        if(!this.settings){
+            this.settings = {regExp: "/-/g"}
+        }
+        for(const patchName in this){
+            if(this.settings[patchName] == undefined && patchName.match(/^patch.+/)){
+                this.settings = {[patchName]: true}
             }
-            BdApi.setData("DashToSpaceInChannelName", "settings", patches)
         }
     }
 
@@ -75,6 +75,8 @@ module.exports = class DashToSpaceInChannelName{
         // Rerender components
         this.rerender()
     }
+
+    onSwitch() {}
 
     getSettingsPanel() {
         var patches = []
@@ -187,8 +189,8 @@ module.exports = class DashToSpaceInChannelName{
 
     patchChannelTitle = ()=>{
         BdApi.Patcher.after("DashToSpaceInChannelName", HeaderBar, "default", 
-            (_, __, ret)=>{
-                if(ret?.props?.children?.props?.children?.[0]?.props?.children?.[0]?.props?.children?.[1]?.props?.children){
+            (_, props, ret)=>{
+                if(props?.[0]?.children?.[2]?.props?.channel?.type === 0 && ret?.props?.children?.props?.children?.[0]?.props?.children?.[0]?.props?.children?.[1]?.props?.children){
                     ret.props.children.props.children[0].props.children[0].props.children[1].props.children = ret.props.children.props.children[0].props.children[0].props.children[1].props.children.replace(this.regExp, " ")
                 }
             }
@@ -289,30 +291,64 @@ module.exports = class DashToSpaceInChannelName{
         )
     }
 
+    patchTitle = ()=>{
+        BdApi.Patcher.after("DashToSpaceInChannelName", this, "onSwitch", 
+            ()=>{
+                var currentChannel = getChannel(getChannelId())
+                if(currentChannel?.type === 0){
+                    document.title = document.title.replace(this.regExp, " ")
+                }
+            }
+        )
+    }
+
     rerender = ()=>{
         Object.entries(this.settings).forEach(
-            (setting)=>{
-                if(typeof setting[1] === "boolean"){
-                    this["rerender" + setting[0].match(/^patch(.+)/)[1]]?.call()
+            ([key, value])=>{
+                if(typeof value === "boolean"){
+                    this["rerender" + key.match(/^patch(.+)/)[1]]?.call()
                 }
             }
         )
     }
 
     rerenderChannelNames = ()=>{
-        Object.keys(document.getElementsByClassName(containerDefault)).forEach(
-            (i)=>{
-                BdApi.getInternalInstance(document.getElementsByClassName(containerDefault)[i]).return.stateNode.forceUpdate()
+        Object.values(document.getElementsByClassName(containerDefault)).forEach(
+            (element)=>{
+                getInstance(BdApi.getInternalInstance(element))?.forceUpdate()
             }
         )
     }
 
     rerenderChannelTitle = ()=>{
-        BdApi.getInternalInstance(document.getElementsByClassName(title)[0]??document)?.return?.stateNode?.forceUpdate()
+        getInstance(BdApi.getInternalInstance(document.getElementsByClassName(title)[0]??document), 1)?.forceUpdate()
     }
 
     rerenderChannelEditorContainer = ()=>{
-        BdApi.getInternalInstance(document.getElementsByClassName(textAreaSlate)[0]??document)?.return?.return?.stateNode?.forceUpdate()
+        getInstance(BdApi.getInternalInstance(document.getElementsByClassName(textAreaSlate)[0]??document))?.forceUpdate()
+    }
+
+    rerenderTitle = ()=>{
+        var currentChannel = getChannel(getChannelId())
+        if(currentChannel?.type === 0){
+            if(!this.settings.patchTitle || !BdApi.Plugins.isEnabled("DashToSpaceInChannelName")){
+                document.title = currentChannel.name
+            }else{
+                document.title = document.title.replace(this.regExp, " ")
+            }
+        }
+    }
+}
+
+function getInstance(element, skip = 0){
+    if(element?.stateNode instanceof BdApi.React.Component){
+        if(skip === 0){
+            return element.stateNode
+        }else{
+            return getInstance(element.return, skip - 1)
+        }
+    }else if(element?.return){
+        return getInstance(element.return, skip)
     }
 }
 
