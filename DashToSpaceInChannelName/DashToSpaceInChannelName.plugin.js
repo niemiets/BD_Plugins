@@ -2,7 +2,7 @@
  * @name DashToSpaceInChannelName
  * @author Niemiets
  * @description Changes dashes in channels name to spaces
- * @version 1.1.3
+ * @version 1.1.4
  * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
  * @website https://github.com/Niemiets/BD_Plugins
@@ -11,7 +11,7 @@
  */
 
 const ChannelItem = BdApi.findModule(m=>m?.default?.displayName === "ChannelItem")
-const HeaderBar = BdApi.findModule(m=>m?.default?.displayName === "HeaderBar")
+const LegacyHeader = BdApi.findModule(m=>m?.default?.displayName === "LegacyHeader")
 const TextChannelEmptyMessage = BdApi.findModule(m=>m?.default?.displayName === "TextChannelEmptyMessage")
 const Mention = BdApi.findModule(m=>m?.default?.displayName === "Mention")
 const Autocomplete = BdApi.findModule(m=>m.default.displayName === "Autocomplete")
@@ -188,10 +188,10 @@ module.exports = class DashToSpaceInChannelName{
     }
 
     patchChannelTitle = ()=>{
-        BdApi.Patcher.after("DashToSpaceInChannelName", HeaderBar, "default", 
+        BdApi.Patcher.after("DashToSpaceInChannelName", LegacyHeader, "default", 
             (_, props, ret)=>{
-                if(props?.[0]?.children?.[2]?.props?.channel?.type === 0 && ret?.props?.children?.props?.children?.[0]?.props?.children?.[0]?.props?.children?.[1]?.props?.children){
-                    ret.props.children.props.children[0].props.children[0].props.children[1].props.children = ret.props.children.props.children[0].props.children[0].props.children[1].props.children.replace(this.regExp, " ")
+                if(typeof ret?.props?.onContextMenu === "function"){
+                    ret.props.children = ret.props.children.replace(this.regExp, " ")
                 }
             }
         )
