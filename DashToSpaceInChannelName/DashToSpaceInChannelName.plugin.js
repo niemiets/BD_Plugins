@@ -2,7 +2,7 @@
  * @name DashToSpaceInChannelName
  * @author Niemiets
  * @description Changes dashes in channels name to spaces
- * @version 1.1.4
+ * @version 1.1.5
  * @authorId 397074265708691456
  * @authorLink https://github.com/Niemiets
  * @website https://github.com/Niemiets/BD_Plugins
@@ -10,31 +10,32 @@
  * @updateUrl https://raw.githubusercontent.com/Niemiets/BD_Plugins/main/DashToSpaceInChannelName/DashToSpaceInChannelName.plugin.js
  */
 
-const ChannelItem = BdApi.findModule(m=>m?.default?.displayName === "ChannelItem")
-const LegacyHeader = BdApi.findModule(m=>m?.default?.displayName === "LegacyHeader")
-const TextChannelEmptyMessage = BdApi.findModule(m=>m?.default?.displayName === "TextChannelEmptyMessage")
-const Mention = BdApi.findModule(m=>m?.default?.displayName === "Mention")
-const Autocomplete = BdApi.findModule(m=>m.default.displayName === "Autocomplete")
+const extend = require("extend")
+
+const ChannelItem = BdApi.findModule(m => m?.default?.displayName === "ChannelItem")
+const LegacyHeader = BdApi.findModule(m => m?.default?.displayName === "LegacyHeader")
+const TextChannelEmptyMessage = BdApi.findModule(m => m?.default?.displayName === "TextChannelEmptyMessage")
+const Mention = BdApi.findModule(m => m?.default?.displayName === "Mention")
+const Autocomplete = BdApi.findModule(m => m?.default?.displayName === "Autocomplete")
 const SearchPopoutComponent = BdApi.findModuleByProps("SearchPopoutComponent")
-const Channel = BdApi.findModule(m=>m.Channel.displayName === "Channel")
-const AcceptGuildTemplate = BdApi.findModule(m=>m.default.toString().includes("acceptGuildTemplate"))
+const Channel = BdApi.findModule(m => m?.Channel?.displayName === "Channel")
+const AcceptGuildTemplate = BdApi.findModule(m => m?.default?.toString()?.includes("acceptGuildTemplate"))
 const SettingsView = BdApi.findModuleByDisplayName("SettingsView")
 const ChannelEditorContainer = BdApi.findModuleByDisplayName("ChannelEditorContainer")
 
-const {default: FormTitle, Tags: FormTitleTags} = BdApi.findModule(m => m.default.displayName === "FormTitle")
-const {default: TextInput, TextInputSizes} = BdApi.findModule(m => m.default.displayName === "TextInput")
-const {default: SwitchItem} = BdApi.findModule(m => m.default.displayName === "SwitchItem")
-const {default: FormDivider} = BdApi.findModule(m => m.default.displayName === "FormDivider")
-const {container: FormContainerClassName, dividerDefault: FormDividerClassName} = BdApi.findModuleByProps("container", "dividerDefault")
-const ModalComponents = BdApi.findModule(m=>m["ModalRoot"]&&!m["default"])
+const { default: FormTitle, Tags: FormTitleTags } = BdApi.findModule(m => m?.default?.displayName === "FormTitle")
+const { default: TextInput, TextInputSizes } = BdApi.findModule(m => m?.default?.displayName === "TextInput")
+const { default: SwitchItem } = BdApi.findModule(m => m?.default?.displayName === "SwitchItem")
+const { default: FormDivider } = BdApi.findModule(m => m?.default?.displayName === "FormDivider")
+const { container: FormContainerClassName, dividerDefault: FormDividerClassName } = BdApi.findModuleByProps("container", "dividerDefault")
+const ModalComponents = BdApi.findModule(m => m?.ModalRoot && !m?.default)
 
-const {textAreaSlate} = BdApi.findModule(m=>m["textAreaSlate"])
-const {containerDefault} = BdApi.findModule(m=>m["containerDefault"])
-const {title} = BdApi.findModule(m=>m["title"]&&m["caret"])
+const { textAreaSlate } = BdApi.findModule(m => m?.textAreaSlate)
+const { containerDefault } = BdApi.findModule(m => m?.containerDefault)
+const { title } = BdApi.findModule(m => m?.title && m?.caret)
 
-const extend = require("extend")
-const {getChannelId} = BdApi.findModuleByProps("getLastSelectedChannelId")
-const {getChannel} = BdApi.findModuleByProps("hasChannel")
+const { getChannelId } = BdApi.findModuleByProps("getLastSelectedChannelId", "getChannelId")
+const { getChannel } = BdApi.findModuleByProps("hasChannel", "getChannel")
 
 module.exports = class DashToSpaceInChannelName{
 
@@ -362,20 +363,12 @@ class Input extends BdApi.React.Component {
 
     render() {
         return BdApi.React.createElement(TextInput, {
-            autoFocus: this.props.autoFocus,
-            className: this.props.className,
-            disabled: this.props.disabled,
-            error: this.props.error,
-            maxLength: this.props.maxLength,
-            name: this.props.name,
+            ...this.props,
+            value: this.state.value,
             onChange: (data)=>{
                 this.setState({value: data})
                 this.props.onChange(this, data)
-            },
-            placeholder: this.props.placeholder,
-            size: this.props.size,
-            type: this.props.type,
-            value: this.state.value
+            }
         })
     }
 }
@@ -390,15 +383,12 @@ class Switch extends BdApi.React.Component {
 
     render() {
         return BdApi.React.createElement(SwitchItem, {
-            children: this.props.children,
-            className: this.props.className,
-            id: this.props.id,
-            note: this.props.note,
+            ...this.props,
+            value: this.state.value,
             onChange: (data)=>{
                 this.setState({value: data})
                 this.props.onChange(this, data)
-            },
-            value: this.state.value
+            }
         })
     }
 }
